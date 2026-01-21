@@ -1,4 +1,4 @@
-"""Generic synchronous message consumer for Pub/Sub."""
+"""Generic async message consumer for Pub/Sub."""
 
 import json
 import logging
@@ -6,21 +6,21 @@ from typing import Type
 
 from pydantic import BaseModel
 
-from fasteroutcomes_pubsub.protocols.handler import MessageHandler
-from fasteroutcomes_pubsub.protocols.subscriber import PubSubSubscriber
+from synapse.protocols.handler import AsyncMessageHandler
+from synapse.protocols.subscriber import AsyncPubSubSubscriber
 
 logger = logging.getLogger(__name__)
 
 
-class MessageConsumer:
+class AsyncMessageConsumer:
     """
-    Generic synchronous message consumer for Pub/Sub.
+    Generic asynchronous message consumer for Pub/Sub.
 
     Responsibilities:
-    - Pull messages from subscription synchronously
+    - Pull messages from subscription asynchronously
     - Parse and validate JSON (using Pydantic)
-    - Route to handler
-    - Acknowledge messages synchronously
+    - Route to async handler
+    - Acknowledge messages asynchronously
 
     The handler is responsible for:
     - Domain processing logic
@@ -31,18 +31,18 @@ class MessageConsumer:
     def __init__(
         self,
         subscription: str,
-        handler: MessageHandler,
+        handler: AsyncMessageHandler,
         request_model: Type[BaseModel],
-        subscriber: PubSubSubscriber,
+        subscriber: AsyncPubSubSubscriber,
     ):
         """
-        Initialize synchronous message consumer.
+        Initialize async message consumer.
 
         Args:
             subscription: Pub/Sub subscription path
-            handler: Message handler implementing MessageHandler protocol
+            handler: Async message handler implementing AsyncMessageHandler protocol
             request_model: Pydantic model for validating messages
-            subscriber: Subscriber adapter for pulling messages
+            subscriber: Async subscriber adapter for pulling messages
         """
         self.subscription = subscription
         self.handler = handler
@@ -58,18 +58,18 @@ class MessageConsumer:
         """Stop the message consumer."""
         self._running = False
 
-    def process_one_message(self) -> None:
+    async def process_one_message(self) -> None:
         """
-        Process a single message from the subscription synchronously.
+        Process a single message from the subscription asynchronously.
 
         This method:
         1. Pulls one message from subscription
         2. Parses and validates JSON
-        3. Routes to handler
+        3. Routes to async handler
         4. Acknowledges the message
         """
         # Pull message from subscription
-        response = self.subscriber.pull(
+        response = await self.subscriber.pull(
             request={"subscription": self.subscription, "max_messages": 1},
             timeout=30,
         )
@@ -84,19 +84,19 @@ class MessageConsumer:
         request = self.request_model(**message_data)
 
         # Route to handler
-        self.handler.handle(request)
+        await self.handler.handle(request)
 
         # Acknowledge message
-        self.subscriber.acknowledge(
+        await self.subscriber.acknowledge(
             request={"subscription": self.subscription, "ack_ids": [received_message.ack_id]}
         )
 
-    def run(self) -> None:
+    async def run(self) -> None:
         """
-        Run the synchronous message consumer loop.
+        Run the async message consumer loop.
 
         Continuously processes messages from the subscription while running.
         Call start() before run(), and stop() to exit the loop.
         """
         while self._running:
-            self.process_one_message()
+            await self.process_one_message()

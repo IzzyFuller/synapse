@@ -1,11 +1,9 @@
-# FasterOutcomes Pub/Sub Library
+# Synapse
 
-[![CI](https://github.com/fasteroutcomes/fasteroutcomes-pubsub/actions/workflows/ci.yml/badge.svg)](https://github.com/fasteroutcomes/fasteroutcomes-pubsub/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/IzzyFuller/f76b3dfd6dbfcac6fc070947b97077d5/raw/fasteroutcomes_pubsub_coverage.json)](https://github.com/fasteroutcomes/fasteroutcomes-pubsub)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
 
-Stack-agnostic pub-sub protocols, consumers, and base models for FasterOutcomes microservices.
+Stack-agnostic pub-sub protocols, consumers, and base models for microservices.
 
 ## Overview
 
@@ -21,10 +19,10 @@ This library provides:
 
 ```bash
 # Via uv (recommended)
-uv add git+https://github.com/fasteroutcomes/fasteroutcomes-pubsub.git@v0.1.0
+uv add git+https://github.com/IzzyFuller/synapse.git@v0.1.0
 
 # Via pip
-pip install git+https://github.com/fasteroutcomes/fasteroutcomes-pubsub.git@v0.1.0
+pip install git+https://github.com/IzzyFuller/synapse.git@v0.1.0
 ```
 
 ## Usage
@@ -124,7 +122,7 @@ class MySubscriberAdapter:
 ### Using the Synchronous MessageConsumer
 
 ```python
-from fasteroutcomes_pubsub.consumer import MessageConsumer
+from synapse.consumer import MessageConsumer
 from pydantic import BaseModel
 
 class MyMessage(BaseModel):
@@ -162,7 +160,7 @@ if __name__ == "__main__":
 
 ```python
 import asyncio
-from fasteroutcomes_pubsub.consumer import AsyncMessageConsumer
+from synapse.consumer import AsyncMessageConsumer
 from pydantic import BaseModel
 
 class MyMessage(BaseModel):
@@ -214,7 +212,7 @@ uv sync --all-groups
 uv run pytest
 
 # Run with coverage
-uv run pytest --cov=fasteroutcomes_pubsub
+uv run pytest --cov=synapse
 
 # Format and lint code
 uv run ruff format src tests

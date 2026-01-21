@@ -2,7 +2,7 @@
 
 from typing import Protocol, Any, runtime_checkable
 
-from fasteroutcomes_pubsub.models.request import PullRequest, AcknowledgeRequest
+from synapse.models.request import PullRequest, AcknowledgeRequest
 
 
 @runtime_checkable

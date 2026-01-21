@@ -29,7 +29,7 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run tests with coverage
-        run: uv run pytest --cov=fasteroutcomes_pubsub --cov-report=xml --cov-report=term-missing
+        run: uv run pytest --cov=synapse --cov-report=xml --cov-report=term-missing
 
       - name: Get coverage percentage
         if: matrix.python-version == '3.13' && github.ref == 'refs/heads/main'
@@ -44,7 +44,7 @@ jobs:
         with:
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: ${{ vars.COVERAGE_GIST_ID }}
-          filename: fasteroutcomes_pubsub_coverage.json
+          filename: synapse_coverage.json
           label: coverage
           message: ${{ env.COVERAGE }}%
           valColorRange: ${{ env.COVERAGE }}

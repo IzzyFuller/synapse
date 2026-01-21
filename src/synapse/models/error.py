@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from fasteroutcomes_pubsub.models.base import CamelCaseModel
+from synapse.models.base import CamelCaseModel
 
 
 class ErrorDetails(CamelCaseModel):

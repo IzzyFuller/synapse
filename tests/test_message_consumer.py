@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 from pydantic import BaseModel
 
-from fasteroutcomes_pubsub.consumer.message_consumer import MessageConsumer
+from synapse.consumer.message_consumer import MessageConsumer
 
 
 class TestRequest(BaseModel):

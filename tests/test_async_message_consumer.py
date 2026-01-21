@@ -6,7 +6,7 @@ from unittest.mock import Mock, AsyncMock
 import pytest
 from pydantic import BaseModel
 
-from fasteroutcomes_pubsub.consumer.async_message_consumer import AsyncMessageConsumer
+from synapse.consumer.async_message_consumer import AsyncMessageConsumer
 
 
 class AsyncTestRequest(BaseModel):

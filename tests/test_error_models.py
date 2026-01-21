@@ -1,6 +1,6 @@
 """Tests for error models (ErrorInfo, ErrorDetails)."""
 
-from fasteroutcomes_pubsub.models.error import ErrorInfo, ErrorDetails
+from synapse.models.error import ErrorInfo, ErrorDetails
 
 
 class TestErrorDetails:
