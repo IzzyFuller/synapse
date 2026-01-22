@@ -1,7 +1,9 @@
 # Synapse
 
+[![CI](https://github.com/IzzyFuller/synapse/actions/workflows/ci.yml/badge.svg)](https://github.com/IzzyFuller/synapse/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/IzzyFuller/synapse/graph/badge.svg)](https://codecov.io/gh/IzzyFuller/synapse)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Stack-agnostic pub-sub protocols, consumers, and base models for microservices.
 

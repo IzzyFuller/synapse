@@ -31,25 +31,12 @@ jobs:
       - name: Run tests with coverage
         run: uv run pytest --cov=synapse --cov-report=xml --cov-report=term-missing
 
-      - name: Get coverage percentage
-        if: matrix.python-version == '3.13' && github.ref == 'refs/heads/main'
-        run: |
-          COVERAGE=$(uv run coverage report --format=total)
-          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
-          echo "Coverage: $COVERAGE%"
-
-      - name: Update coverage badge
-        if: matrix.python-version == '3.13' && github.ref == 'refs/heads/main'
-        uses: schneegans/dynamic-badges-action@v1.7.0
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@v5
         with:
-          auth: ${{ secrets.GIST_TOKEN }}
-          gistID: ${{ vars.COVERAGE_GIST_ID }}
-          filename: synapse_coverage.json
-          label: coverage
-          message: ${{ env.COVERAGE }}%
-          valColorRange: ${{ env.COVERAGE }}
-          maxColorRange: 100
-          minColorRange: 50
+          files: ./coverage.xml
+          fail_ci_if_error: false
 
   lint:
     runs-on: ubuntu-latest
