@@ -101,24 +101,65 @@ consumer = MessageConsumer(
 )
 ```
 
-**Other clients** - If your client's API differs, write a thin adapter:
+**Other clients** - Adapters must return GCP-shaped response objects. The `MessageConsumer` expects:
+
 ```python
-class MySubscriberAdapter:
-    """Adapter for a client with a different API."""
+response.received_messages[0].message.data  # bytes
+response.received_messages[0].ack_id        # str
+```
 
-    def __init__(self, client):
-        self._client = client
+Here's a complete adapter example for RabbitMQ:
 
-    def pull(self, request: PullRequest, timeout: float) -> Any:
-        # Access TypedDict values via dict syntax
-        return self._client.receive(
-            subscription=request["subscription"],
-            max_messages=request["max_messages"],
-            timeout=timeout
-        )
+```python
+from dataclasses import dataclass
+from synapse.models.request import PullRequest, AcknowledgeRequest
+
+# Response objects matching GCP Pub/Sub structure
+@dataclass
+class Message:
+    data: bytes
+
+@dataclass
+class ReceivedMessage:
+    message: Message
+    ack_id: str
+
+@dataclass
+class PullResponse:
+    received_messages: list[ReceivedMessage]
+
+
+class RabbitMQSubscriber:
+    """Adapter returning GCP-shaped responses."""
+
+    def __init__(self, channel):
+        self._channel = channel
+        self._pending_acks: dict[str, int] = {}
+
+    def pull(self, request: PullRequest, timeout: float) -> PullResponse:
+        queue = request["subscription"]
+        received_messages: list[ReceivedMessage] = []
+
+        for method, _properties, body in self._channel.consume(
+            queue=queue, auto_ack=False, inactivity_timeout=timeout
+        ):
+            if method is None:
+                break
+            ack_id = str(method.delivery_tag)
+            self._pending_acks[ack_id] = method.delivery_tag
+            received_messages.append(
+                ReceivedMessage(message=Message(data=body), ack_id=ack_id)
+            )
+            break
+
+        self._channel.cancel()
+        return PullResponse(received_messages=received_messages)
 
     def acknowledge(self, request: AcknowledgeRequest) -> None:
-        self._client.ack(request["subscription"], request["ack_ids"])
+        for ack_id in request["ack_ids"]:
+            delivery_tag = self._pending_acks.pop(ack_id, None)
+            if delivery_tag is not None:
+                self._channel.basic_ack(delivery_tag=delivery_tag)
 ```
 
 ### Using the Synchronous MessageConsumer
